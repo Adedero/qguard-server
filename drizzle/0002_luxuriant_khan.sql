@@ -1,0 +1,1 @@
+ALTER TABLE "evidences" ALTER COLUMN "reportId" SET NOT NULL;

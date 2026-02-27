@@ -1,0 +1,17 @@
+# System directories and files
+.vscode
+node_modules
+
+# Secrets & Environment Variables
+.env
+
+# Logs
+logs
+
+# Temporary files
+tmp
+
+# Build output
+dist
+output
+build

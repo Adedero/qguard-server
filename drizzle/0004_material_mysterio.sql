@@ -1,0 +1,1 @@
+ALTER TABLE "meta" ADD COLUMN "kitoMembersCount" integer DEFAULT 0 NOT NULL;

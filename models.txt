@@ -1,0 +1,303 @@
+import * as t from "drizzle-orm/pg-core";
+import { createdAt, id, updatedAt } from "../utils/_partials.js";
+import { users } from "./user.model.js";
+import { relations } from "drizzle-orm";
+
+export const accounts = t.pgTable(
+  "accounts",
+  {
+    id,
+    userId: t
+      .text()
+      .notNull()
+      .references(() => users.id)
+      .unique(),
+    providerId: t.text().notNull(),
+    password: t.text(),
+    createdAt,
+    updatedAt
+  },
+  (table) => [t.index("account_user_id_idx").on(table.userId)]
+);
+
+import { createdAt, id, updatedAt } from "../utils/_partials.js";
+import { pgTable as table } from "drizzle-orm/pg-core";
+import * as t from "drizzle-orm/pg-core";
+import { reports } from "./report.model.js";
+import { relations } from "drizzle-orm";
+import { users } from "./user.model.js";
+
+export type EvidenceModel = typeof evidences.$inferSelect;
+
+export const evidences = table("evidences", {
+  id,
+  userId: t
+    .text()
+    .notNull()
+    .references(() => users.id),
+  reportId: t
+    .text()
+    .references(() => reports.id, { onDelete: "cascade" })
+    .notNull(),
+  fileId: t.text().notNull(),
+  fileName: t.text().notNull(),
+  fileURL: t.text().notNull(),
+  fileType: t.text().notNull(),
+  fileSize: t.integer().notNull(),
+  createdAt,
+  updatedAt
+});
+
+export const evidencesRelations = relations(evidences, ({ one }) => ({
+  uploader: one(users, {
+    fields: [evidences.userId],
+    references: [users.id]
+  }),
+  report: one(reports, {
+    fields: [evidences.reportId],
+    references: [reports.id]
+  })
+}));
+
+
+import { createdAt, id, updatedAt } from "../utils/_partials.js";
+import * as t from "drizzle-orm/pg-core";
+import { reportsToKitoMembers } from "./report.model.js";
+import { relations } from "drizzle-orm";
+
+export type KitoMemberModel = typeof kitoMembers.$inferSelect;
+
+export const kitoMembers = t.pgTable("kito_members", {
+  id,
+  fullName: t.text().notNull(),
+  aliases: t.text().array().notNull().default([]),
+  contacts: t.jsonb().$type<{ id: string; type: string; value: string }[]>().notNull().default([]),
+  createdAt,
+  updatedAt
+});
+
+export const kitoMembersRelations = relations(kitoMembers, ({ many }) => ({
+  reportsToKitoMembers: many(reportsToKitoMembers)
+}));
+
+
+import { createdAt, id, updatedAt } from "#database/utils/_partials.js";
+import { relations, sql } from "drizzle-orm";
+import { index, integer, pgTable, real, text } from "drizzle-orm/pg-core";
+import { reports } from "./report.model.js";
+
+export type LocationModel = typeof locations.$inferSelect;
+
+export const locations = pgTable(
+  "locations",
+  {
+    id,
+    name: text().notNull().unique(),
+    locationName: text().notNull(),
+    displayName: text().notNull(),
+    subregion: text().notNull(),
+    region: text().notNull(),
+    country: text().notNull(),
+    latitude: real(),
+    longitude: real(),
+    reportsCount: integer().notNull().default(0),
+    createdAt,
+    updatedAt
+  },
+  (t) => [
+    index("name").on(t.name),
+    index("search_index").using(
+      "gin",
+      sql`(
+        setweight(to_tsvector('english', ${t.name}), 'A') ||
+        setweight(to_tsvector('english', ${t.locationName}), 'B') ||
+        setweight(to_tsvector('english', ${t.displayName}), 'C')
+      )`
+    )
+  ]
+);
+
+export const locationsRelations = relations(locations, ({ many }) => ({
+  reports: many(reports)
+}));
+
+
+import { desc, relations } from "drizzle-orm";
+import { createdAt, id, updatedAt } from "../utils/_partials.js";
+import { primaryKey, pgTable, text, date, index, boolean, timestamp } from "drizzle-orm/pg-core";
+import { evidences } from "./evidence.model.js";
+import { kitoMembers } from "./kito-member.model.js";
+import { locations } from "./location.model.js";
+import { users } from "./user.model.js";
+
+export type ReportModel = typeof reports.$inferSelect;
+export type ReportModelInsert = typeof reports.$inferInsert;
+
+export const reports = pgTable(
+  "reports",
+  {
+    id,
+    locationId: text()
+      .notNull()
+      .references(() => locations.id),
+    reporterId: text()
+      .notNull()
+      .references(() => users.id, { onDelete: "no action" }),
+    incidentDate: date().notNull(),
+    locationInfo: text(),
+    description: text().notNull(),
+    pendingApproval: boolean().notNull().default(true),
+    approvedAt: timestamp(),
+    createdAt,
+    updatedAt
+  },
+  (table) => [
+    index("reports_id_desc_idx").on(table.createdAt, desc(table.id)),
+    index("pending_approval_idx").on(table.pendingApproval),
+    index("location_id").on(table.locationId)
+  ]
+);
+
+export const reportsRelations = relations(reports, ({ one, many }) => ({
+  reporter: one(users, {
+    fields: [reports.reporterId],
+    references: [users.id]
+  }),
+  location: one(locations, {
+    fields: [reports.locationId],
+    references: [locations.id]
+  }),
+  evidences: many(evidences),
+  reportsToKitoMembers: many(reportsToKitoMembers)
+}));
+
+// Join Table
+export const reportsToKitoMembers = pgTable(
+  "reports_to_kito_members",
+  {
+    reportId: text("report_id")
+      .notNull()
+      .references(() => reports.id, { onDelete: "cascade" }),
+    kitoMemberId: text("kito_member_id")
+      .notNull()
+      .references(() => kitoMembers.id, { onDelete: "cascade" })
+  },
+  (table) => [primaryKey({ columns: [table.reportId, table.kitoMemberId] })]
+);
+
+export const reportsToKitoMembersRelations = relations(reportsToKitoMembers, ({ one }) => ({
+  kitoMember: one(kitoMembers, {
+    fields: [reportsToKitoMembers.kitoMemberId],
+    references: [kitoMembers.id]
+  }),
+  report: one(reports, {
+    fields: [reportsToKitoMembers.reportId],
+    references: [reports.id]
+  })
+}));
+
+
+import * as t from "drizzle-orm/pg-core";
+import { createdAt, id, updatedAt } from "../utils/_partials.js";
+import { users } from "./user.model.js";
+import { relations } from "drizzle-orm";
+
+export const sessions = t.pgTable("sessions", {
+  id,
+  userId: t
+    .text()
+    .notNull()
+    .references(() => users.id),
+  // deviceFingerprint: t.text().notNull(),
+  // requiresVerification: t.boolean().notNull().default(false),
+  refreshToken: t.text().notNull().unique(), // a hash of the token. not the raw value
+  expiresAt: t.timestamp().notNull(),
+  lastUsedAt: t.timestamp().notNull(), // update on refresh
+  revokedAt: t.timestamp(),
+  ipAddress: t.text(),
+  userAgent: t.text(),
+  createdAt,
+  updatedAt
+});
+
+export const sessionsRelations = relations(sessions, ({ one }) => ({
+  user: one(users, {
+    fields: [sessions.userId],
+    references: [users.id]
+  })
+}))
+
+import { relations } from "drizzle-orm";
+import { createdAt, id, updatedAt } from "../utils/_partials.js";
+import { pgTable as table } from "drizzle-orm/pg-core";
+import * as t from "drizzle-orm/pg-core";
+import { evidences } from "./evidence.model.js";
+import { reports } from "./report.model.js";
+import { sessions } from "./session.model.js";
+
+// User table
+export type UserModel = typeof users.$inferSelect;
+
+export const users = table(
+  "users",
+  {
+    id,
+    firstName: t.text().notNull(),
+    lastName: t.text().notNull(),
+    email: t.text().notNull().unique(),
+    emailVerified: t.boolean().notNull().default(false),
+    image: t.jsonb().$type<{ id: string; url: string }>(),
+    role: t
+      .text({ enum: ["admin", "user"] })
+      .notNull()
+      .default("user"),
+    country: t.text().notNull(),
+    region: t.text().notNull(),
+    subregion: t.text().notNull(),
+    phone: t.text(),
+    lastLoginMethod: t.text(),
+    banned: t.boolean().notNull().default(false),
+    bannedReason: t.text(),
+    bannedAt: t.timestamp(),
+    banExpiresAt: t.timestamp(),
+    lastLoggedInAt: t.timestamp(),
+    lastActiveAt: t.timestamp(),
+    createdAt,
+    updatedAt
+  },
+  (table) => [t.index("user_email_idx").on(table.email)]
+);
+
+export const usersRelations = relations(users, ({ many }) => ({
+  reports: many(reports),
+  evidences: many(evidences),
+  sessions: many(sessions)
+}));
+
+
+import * as t from "drizzle-orm/pg-core";
+import { createdAt, id, updatedAt } from "../utils/_partials.js";
+
+export const verificationTypeEnum = t.pgEnum("verification-type", [
+  "email_verification",
+  "password_reset"
+]);
+
+export type VerificationModel = typeof verifications.$inferSelect;
+
+export const verifications = t.pgTable(
+  "verifications",
+  {
+    id,
+    identifier: t.text().notNull(),
+    value: t.text().notNull().unique(), // a hash of the token. not the raw value
+    type: verificationTypeEnum().notNull(),
+    expiresAt: t.timestamp().notNull(),
+    createdAt,
+    updatedAt
+  },
+  (table) => [
+    t.index("verification_identifier_idx").on(table.identifier),
+    t.uniqueIndex("verification_identifier_type_idx").on(table.identifier, table.type)
+  ]
+);

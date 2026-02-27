@@ -1,0 +1,3 @@
+- Add aggressive rate limiting to auth endpoints
+- Set up Cloudinary for image storage
+- Caching with redis

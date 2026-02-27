@@ -1,0 +1,1 @@
+ALTER TABLE "reports" ADD COLUMN "pendingApproval" boolean DEFAULT true NOT NULL;

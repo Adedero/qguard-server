@@ -1,0 +1,1 @@
+ALTER TABLE "evidences" ALTER COLUMN "locationId" SET NOT NULL;
