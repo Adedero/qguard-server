@@ -21,9 +21,7 @@ jobs:
             set -e
             
             echo "Activating Node environment..."
-            source /home/myasezip/nodevenv/domains/server.myassetstracker.live/22/bin/activate
-
-            cd ~/domains/server.myassetstracker.live
+            source /home/myasezip/nodevenv/domains/server.myassetstracker.live/22/bin/activate && cd /home/myasezip/domains/server.myassetstracker.live
 
             echo "Pulling latest code..."
             git pull origin main
