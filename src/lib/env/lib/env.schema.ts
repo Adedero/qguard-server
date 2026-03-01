@@ -15,11 +15,7 @@ export const envSchema = z.object({
   ALLOWED_ORIGINS: z.preprocess(
     (value) => {
       if (typeof value === "string") {
-        try {
-          return JSON.parse(value);
-        } catch {
-          return value;
-        }
+        return value.split("|").map((origin) => origin.trim());
       }
       return value;
     },
