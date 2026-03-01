@@ -36,7 +36,7 @@ jobs:
             npm run swagger
 
             echo "Running database migrations..."
-            npm run db:push
+            npm run db:migrate
 
             echo "Restarting Passenger app..."
             mkdir -p tmp
