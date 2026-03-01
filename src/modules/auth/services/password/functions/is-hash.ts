@@ -8,8 +8,11 @@ export const isHash = (val: unknown): boolean => {
   const trimmed = val.trim();
   if (!trimmed) return false;
 
-  const argon2Regex =
-    /^\$argon2(id|i|d)\$v=\d+\$m=\d+,t=\d+,p=\d+\$[A-Za-z0-9+/=]+\$[A-Za-z0-9+/=]+$/;
+  const bcryptRegex = /^\$2[aby]\$\d{2}\$.{53}$/;
+  return bcryptRegex.test(trimmed);
 
-  return argon2Regex.test(trimmed);
+  // const argon2Regex =
+  //   /^\$argon2(id|i|d)\$v=\d+\$m=\d+,t=\d+,p=\d+\$[A-Za-z0-9+/=]+\$[A-Za-z0-9+/=]+$/;
+
+  // return argon2Regex.test(trimmed);
 };

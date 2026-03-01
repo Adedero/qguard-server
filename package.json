@@ -41,6 +41,7 @@
   "dependencies": {
     "@react-email/components": "1.0.7",
     "argon2": "^0.44.0",
+    "bcrypt": "^6.0.0",
     "bullmq": "^5.67.3",
     "cloudinary": "^2.9.0",
     "compression": "^1.8.1",
@@ -73,6 +74,7 @@
   },
   "devDependencies": {
     "@react-email/preview-server": "5.2.8",
+    "@types/bcrypt": "^6.0.0",
     "@types/busboy": "^1.5.4",
     "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.19",
