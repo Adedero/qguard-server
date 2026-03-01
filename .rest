@@ -1,0 +1,7 @@
+POST http://localhost:4400/api/auth/sign-in
+Content-Type: application/json
+
+{
+  "email": "adedero@myassetstracker.live",
+  "password": "ValarMorghulis66$"
+}
