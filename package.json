@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc  --noEmitOnError false",
     "dev": "nodemon src/index.ts",
-    "start": "node --inspect dist/index.js",
+    "start": "node dist/index.js",
     "db:generate": "tsx node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "tsx node_modules/drizzle-kit/bin.cjs  migrate",
     "db:push": "tsx node_modules/drizzle-kit/bin.cjs  push",
