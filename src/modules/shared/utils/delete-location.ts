@@ -3,6 +3,7 @@ import { Table } from "#database/models/index.js";
 import { Meta } from "#database/utils/meta.js";
 import logger from "#lib/logger/index.js";
 import { deleteLocalAsset } from "#modules/assets/utils/delete-local-asset.js";
+import { deleteRemoteAssets } from "#modules/assets/utils/delete-remote-assets.js";
 import { and, count, eq } from "drizzle-orm";
 
 export const deleteLocation = async (locationId: string) => {
@@ -53,7 +54,8 @@ export const deleteLocation = async (locationId: string) => {
 
     // 6️⃣ Delete local files
     if (fileIds.length) {
-      await deleteLocalAsset(fileIds, { db });
+      await deleteRemoteAssets(fileIds);
+      // await deleteLocalAsset(fileIds, { db });
     }
     logger.info(`Deleted location with ID: ${locationId} and relevant files`);
   } catch (err) {

@@ -26,6 +26,7 @@
   "imports": {
     "#app": "./dist/app.js",
     "#server": "./dist/index.js",
+    "#config/*": "./dist/config/*",
     "#database/*": "./dist/database/*",
     "#errors/*": "./dist/errors/*",
     "#lib/*": "./dist/lib/*",
@@ -54,6 +55,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.1",
+    "p-limit": "^7.3.0",
     "pg": "^8.18.0",
     "rate-limiter-flexible": "^9.1.1",
     "react": "19.2.4",

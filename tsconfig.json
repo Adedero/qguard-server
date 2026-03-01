@@ -7,6 +7,7 @@
     "paths": {
       "#app": ["./src/app.js"],
       "#server": ["./src/index.js"],
+      "#config/*": ["./src/config/*"],
       "#database/*": ["./src/database/*"],
       "#errors/*": ["./src/errors/*"],
       "#lib/*": ["./src/lib/*"],

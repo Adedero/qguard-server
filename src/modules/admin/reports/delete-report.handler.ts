@@ -3,6 +3,7 @@ import { Table } from "#database/models/index.js";
 import { Meta } from "#database/utils/meta.js";
 import { HttpException } from "#errors/http-exception.js";
 import { deleteLocalAsset } from "#modules/assets/utils/delete-local-asset.js";
+import { deleteRemoteAssets } from "#modules/assets/utils/delete-remote-assets.js";
 import { defineRequestHandler } from "#utils/request-handler.js";
 import { eq, sql } from "drizzle-orm";
 import z from "zod";
@@ -60,7 +61,8 @@ export const deleteReport = defineRequestHandler({
 
       if (report.evidences.length > 0) {
         const evidenceIds = report.evidences.map((e) => e.fileId);
-        await deleteLocalAsset(evidenceIds, { db: tx });
+        await deleteRemoteAssets(evidenceIds);
+        //await deleteLocalAsset(evidenceIds, { db: tx });
       }
 
       return deleted;

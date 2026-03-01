@@ -8,12 +8,13 @@ import SIRV from "#middleware/sirv.middleware.js";
 import swaggerUI from "#middleware/swagger.middleware.js";
 import { errorHandler, notFoundHandler } from "#middleware/error.middleware.js";
 import compression from "compression";
+import logger from "#lib/logger/index.js";
 
 export function createApp(): Express {
   const app = express();
   /* Middleware */
   app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
+    logger.info(`${req.method} ${req.url}`);
     next();
   });
   app.use(CORS());

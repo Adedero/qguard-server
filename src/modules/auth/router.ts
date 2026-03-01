@@ -7,6 +7,7 @@ import { refreshSession } from "./handlers/refresh-session.handler.js";
 import { signOut } from "./handlers/sign-out.handler.js";
 import { sendPasswordResetEmail } from "./handlers/send-password-reset-email.handler.js";
 import { resetPassword } from "./handlers/reset-password.handler.js";
+import { authHandler } from "#middleware/auth.middleware.js";
 
 export default function createAuthRoutes(): Router {
   const router = Router();
@@ -18,7 +19,7 @@ export default function createAuthRoutes(): Router {
   router.post("/send-password-reset-email", sendPasswordResetEmail);
   router.post("/reset-password", resetPassword);
   router.post("/refresh-session", refreshSession);
-  router.post("/sign-out", signOut);
+  router.post("/sign-out", authHandler({ roles: ["user", "admin"] }), signOut);
 
   return router;
 }

@@ -30,6 +30,7 @@ export const envSchema = z.object({
   BASE_URL: z.url(setInvalidVariableErrorMessage("BASE_URL")),
   CLIENT_NAME: z.string(setMissingVariableErrorMessage("CLIENT_NAME")),
   CLIENT_URL: z.url(setInvalidVariableErrorMessage("CLIENT_URL")),
+  CLOUDINARY_URL: z.string(setMissingVariableErrorMessage("CLOUDINARY_URL")),
   DATABASE_URL: z.string(setMissingVariableErrorMessage("DATABASE_URL")),
   EMAIL_HOST: z.string(setMissingVariableErrorMessage("EMAIL_HOST")),
   EMAIL_PASSWORD: z.string(setMissingVariableErrorMessage("EMAIL_PASSWORD")),
@@ -53,14 +54,4 @@ export const envSchema = z.object({
     .default("development"),
   PORT: z.coerce.number(setInvalidVariableErrorMessage("PORT")).default(4400),
   REDIS_CLIENT_URL: z.string().default("redis://localhost:6379")
-  // AWS_REGION: z.string(setMissingVariableErrorMessage("AWS_REGION")),
-  // AWS_ACCESS_KEY_ID: z.string(
-  //   setMissingVariableErrorMessage("AWS_ACCESS_KEY_ID")
-  // ),
-  // AWS_SECRET_ACCESS_KEY: z.string(
-  //   setMissingVariableErrorMessage("AWS_SECRET_ACCESS_KEY")
-  // ),
-  // AWS_BUCKET_KEY: z.string(setMissingVariableErrorMessage("AWS_BUCKET_KEY")),
-  // AWS_PUBLIC_URL: z.string(setMissingVariableErrorMessage("AWS_PUBLIC_URL")),
-  // AWS_ENDPOINT: z.string(setMissingVariableErrorMessage("AWS_ENDPOINT"))
 });
