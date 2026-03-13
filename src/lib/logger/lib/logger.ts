@@ -31,7 +31,7 @@ export class Logger {
   private constructor(options: LoggerOptions = {}) {
     const { rootDir, format = "text" } = options;
     this.outputFormat = format;
-    this.logsDir = rootDir ?? path.resolve("logs");
+    this.logsDir = rootDir ?? path.resolve(process.cwd(), "logs");
 
     if (!fs.existsSync(this.logsDir)) {
       fs.mkdirSync(this.logsDir, { recursive: true });
