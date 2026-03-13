@@ -10,7 +10,7 @@ export class Env {
   }
 
   init() {
-    if (process.env.NODE_ENV !== "producion") {
+    if (process.env.NODE_ENV !== "production") {
       dotenv.config({ quiet: true });
     }
     const result = envSchema.safeParse(process.env);
