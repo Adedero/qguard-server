@@ -18,7 +18,7 @@ export function createApp(): Express {
     next();
   });
   app.use(CORS());
-  app.options("/{*splat}", CORS());
+  //app.options("/{*splat}", CORS());
   app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
   app.use(compression());
   app.use(express.static("public"));
