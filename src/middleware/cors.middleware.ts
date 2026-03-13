@@ -1,11 +1,21 @@
 import env from "#lib/env/index.js";
+import logger from "#lib/logger/index.js";
 import cors from "cors";
-console.log("Allowed origins:", env.get("ALLOWED_ORIGINS"));
+
+const ALLOWED_ORIGINS = env.get("ALLOWED_ORIGINS");
+
 export default function CORS(): ReturnType<typeof cors> {
   return cors({
-    origin: env.get("ALLOWED_ORIGINS"),
+    origin: (origin, callback) => {
+      logger.info(`CORS origin: ${origin}`);
+
+      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+        callback(null, true)
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`))
+      }
+    },
     credentials: true,
     methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-    optionsSuccessStatus: 204
   });
 }
